@@ -71,6 +71,7 @@ def create_data_from_svg(dir=None, outdir=None, tempfiles=False, sampling_interv
 	Creates data from a YAML and SVG File from a specific source.
 	Both files are mandatory.
 	"""
+
     if dir == None:
         dir = '../../literature'
 
@@ -81,8 +82,6 @@ def create_data_from_svg(dir=None, outdir=None, tempfiles=False, sampling_interv
     files = [Path(file) for file in glob.glob(Path(dir + '**' + '*.yaml')]
     
     for file in files:
-        outpath = Path(str(file.parents[0]).replace('website\literature', '\website\data\\generated\\svgdigitizer'))
-        outfolder = Path(str(file.parents[0]).replace('website\literature', ''))
         from svgdigitizer.__main__ import digitize_cv as cvdigitize
             if tempfiles:
                 import tempfile
@@ -91,10 +90,11 @@ def create_data_from_svg(dir=None, outdir=None, tempfiles=False, sampling_interv
 
                 outdir = tempfile.mkdtemp()
                 atexit.register(lambda dirname: shutil.rmtree(dirname), outdir)
+                # return data
                 pass
             elif outdir=None:
                 outdir = '../../website/data/generated/svgdigitizer/'
-                cvdigitize.callback(sampling_interval=sampling_interval, svg=str(file.with_suffix('.svg')), metadata=open(file, 'rb'), package=True, outdir=f'{outdir}/{outfolder}')
+                cvdigitize.callback(sampling_interval=sampling_interval, svg=str(file.with_suffix('.svg')), metadata=open(file, 'rb'), package=True, outdir=f'{outdir}/{file.stem}')
 
 def create_data_from_df(identifiers, dfs, metadata):
     """
