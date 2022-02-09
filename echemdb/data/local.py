@@ -60,41 +60,33 @@ def collect_bibliography(bibfiles):
     return [entry for file in glob(os.path.join(bibfiles, '**', '*.bib'), recursive=True) for entry in parse_file(file, bib_format="bibtex").entries.values()]
 
 def from_folder(dir):
-	"""
-	Copies CSV and YAML with identical filenames from the raw folder to data.
-	Both files are mandatory.
-	"""
+    r"""
+    Copies CSV and YAML with identical filenames from the raw folder to data.
+    Both files are mandatory.
+    """
     pass
 
 def create_data_from_svg(dir=None, outdir=None, tempfiles=False, sampling_interval=0.01):
-	"""
-	Creates data from a YAML and SVG File from a specific source.
-	Both files are mandatory.
-	"""
-
+    r"""
+    Creates data from a YAML and SVG File from a specific source.
+    Both files are mandatory.
+    """
     if dir == None:
-        dir = '../../literature'
+        dir = 'literature'
 
     import glob
+    import os.path
     from pathlib import Path
-    
 
-    files = [Path(file) for file in glob.glob(Path(dir + '**' + '*.yaml')]
+    files = [Path(file) for file in glob.glob(os.path.join(dir, '**', '*.yaml'))]
     
+    if outdir==None:
+        outdir = 'data/generated/svgdigitizer/'
+
     for file in files:
-        from svgdigitizer.__main__ import digitize_cv as cvdigitize
-            if tempfiles:
-                import tempfile
-                import atexit
-                import shutil
-
-                outdir = tempfile.mkdtemp()
-                atexit.register(lambda dirname: shutil.rmtree(dirname), outdir)
-                # return data
-                pass
-            elif outdir=None:
-                outdir = '../../website/data/generated/svgdigitizer/'
-                cvdigitize.callback(sampling_interval=sampling_interval, svg=str(file.with_suffix('.svg')), metadata=open(file, 'rb'), package=True, outdir=f'{outdir}/{file.stem}')
+        print(file)
+        from svgdigitizer.__main__ import digitize_cv
+        digitize_cv.callback(sampling_interval=sampling_interval, svg=str(file.with_suffix('.svg')), metadata=open(file, 'rb'), package=True, outdir=f'{outdir}/{file.stem}')
 
 def create_data_from_df(identifiers, dfs, metadata):
     """
